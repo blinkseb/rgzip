@@ -1,12 +1,11 @@
-use std::fs::File;
-use std::io::BufReader;
-use std::io::prelude::*;
 use flate2::read::GzDecoder;
 use flate2::write::GzEncoder;
+use std::fs::File;
+use std::io::prelude::*;
+use std::io::BufReader;
 use structopt::StructOpt;
 
 const TARGET_SIZE: u64 = 20 * 1024 * 1024; // 20 MiB
-
 
 /// Compress input into multiple gz parts not exceeding a given target size.
 #[derive(Debug, StructOpt)]
@@ -46,12 +45,18 @@ fn main() -> std::io::Result<()> {
         i += 1;
 
         let line = line.unwrap();
-        output_file.write(line.as_bytes()).expect("unexpected error while writing data");
-        output_file.write("\n".as_bytes()).expect("unexpected error while writing data");
+        output_file
+            .write(line.as_bytes())
+            .expect("unexpected error while writing data");
+        output_file
+            .write("\n".as_bytes())
+            .expect("unexpected error while writing data");
 
         if i > 10000 {
             i = 0;
-            output_file.flush().expect("unexpected error while flushing");
+            output_file
+                .flush()
+                .expect("unexpected error while flushing");
             let output_file_size = output_file.get_ref().seek(std::io::SeekFrom::Current(0))?;
 
             if output_file_size >= TARGET_SIZE {
